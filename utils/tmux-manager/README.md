@@ -11,3 +11,6 @@ Add the following to your shell rc (e.g. ~/.zshrc):
 ```shell
 tmux bind-key -n C-f run-shell "$HOME/bin/tt"
 ```
+
+The two binaries have to be added to the path. This can be done by symlinking
+them from any directory in the path, like `~/bin` is on some systems.
