@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ZOXIDE_RESULT=$(zoxide query -l | sed "s%$HOME%~%g" | fzf-tmux -p)
+ZOXIDE_REPLACED=$(echo $ZOXIDE_RESULT | sed "s%~%$HOME%g")
+t $ZOXIDE_REPLACED

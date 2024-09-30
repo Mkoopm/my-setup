@@ -1,0 +1,39 @@
+#!/bin/sh
+ZOXIDE_RESULT=$(zoxide query $1)
+
+if [ -z "$ZOXIDE_RESULT" ]; then
+  echo "No result found for: "$ZOXIDE_RESULT
+  exit 1
+fi
+
+RESULT_DIR=$(basename $ZOXIDE_RESULT)
+
+SESSION_NAME=$(tmux list-sessions | grep $RESULT_DIR)
+
+pre_switch_actions() {
+  tmux send-keys -t "$RESULT_DIR:0" "cd $ZOXIDE_RESULT" C-m
+  if [ -f $ZOXIDE_RESULT"/pyproject.toml" ]; then
+    tmux send-keys -t "$RESULT_DIR:0" "poetry shell" C-m
+  fi
+  if [ -d $ZOXIDE_RESULT"/.git" ]; then
+    tmux send-keys -t "$RESULT_DIR:0" "nvim" C-m
+  fi
+}
+
+if [ -z "$TMUX" ]; then
+  if [ -z "$SESSION_NAME" ]; then
+    echo "no session found."
+    tmux new-session -ds $RESULT_DIR
+    pre_switch_actions
+  fi
+
+  tmux attach -t $RESULT_DIR
+else
+  # tmux is active
+  if [ -z "$SESSION_NAME" ]; then
+    tmux new-session -ds $RESULT_DIR
+    pre_switch_actions
+  fi
+
+  tmux switch-client -t $RESULT_DIR
+fi
