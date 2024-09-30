@@ -9,7 +9,8 @@ that also works inside tmux.
 Add the following to your shell rc (e.g. ~/.zshrc):
 
 ```shell
-tmux bind-key -n C-f run-shell "$HOME/bin/tt"
+tmux bind-key -n C-f run-shell "$HOME/bin/t"
+tmux set-option -g detach-on-destroy off
 ```
 
 The two binaries have to be added to the path. This can be done by symlinking
