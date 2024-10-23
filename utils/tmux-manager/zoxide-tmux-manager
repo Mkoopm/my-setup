@@ -7,13 +7,10 @@ if [ -z "$ZOXIDE_RESULT" ]; then
 fi
 
 RESULT_DIR=$(basename $ZOXIDE_RESULT)
-
-SESSION_NAME=$(tmux list-sessions | grep $RESULT_DIR)
+RESULT_DIR=$(echo "$RESULT_DIR" | sed 's/[.:]/_/g')
 
 pre_switch_actions() {
-  init_command="cd $ZOXIDE_RESULT && \
-    if [ -f \"pyproject.toml\" ]; then poetry shell; fi && \
-    if [ -d \".git\" ]; then nvim; fi"
+  init_command='cd '$ZOXIDE_RESULT' && if (poetry env info); then source $(poetry env info --path)/bin/activate; fi && clear && if [ -d ".git" ]; then nvim; fi'
   tmux send-keys -t "$RESULT_DIR:0" "$init_command" C-m
 }
 
@@ -27,6 +24,7 @@ if [ -z "$TMUX" ]; then
   tmux attach -t $RESULT_DIR
 else
   # tmux is active
+  SESSION_NAME=$(tmux list-sessions | grep $RESULT_DIR)
   if [ -z "$SESSION_NAME" ]; then
     tmux new-session -ds $RESULT_DIR
     pre_switch_actions
