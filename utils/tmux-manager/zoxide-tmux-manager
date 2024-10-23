@@ -10,7 +10,7 @@ RESULT_DIR=$(basename $ZOXIDE_RESULT)
 RESULT_DIR=$(echo "$RESULT_DIR" | sed 's/[.:]/_/g')
 
 pre_switch_actions() {
-  init_command='cd '$ZOXIDE_RESULT' && if (poetry env info); then source $(poetry env info --path)/bin/activate; fi && clear && if [ -d ".git" ]; then nvim; fi'
+  init_command='cd '$ZOXIDE_RESULT' && if [[ -n $(poetry env info --path) ]]; then source $(poetry env info --path)/bin/activate; fi && clear && if [ -d ".git" ]; then nvim; fi'
   tmux send-keys -t "$RESULT_DIR:0" "$init_command" C-m
 }
 
