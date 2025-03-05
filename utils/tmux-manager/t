@@ -1,4 +1,6 @@
 #!/bin/sh
-ZOXIDE_RESULT=$(zoxide query -l | sed "s%$HOME%~%g" | fzf-tmux -p)
-ZOXIDE_REPLACED=$(echo $ZOXIDE_RESULT | sed "s%~%$HOME%g")
+set -e
+
+RESULT_PATH=$(zoxide query -l | sed "s%$HOME%~%g" | fzf-tmux -p)
+ZOXIDE_REPLACED=$(echo $RESULT_PATH | sed "s%~%$HOME%g")
 zoxide-tmux-manager $ZOXIDE_REPLACED
