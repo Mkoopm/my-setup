@@ -13,7 +13,8 @@ RESULT_DIRECTORY_NAME=$(basename $RESULT_PATH)
 RESULT_DIRECTORY_NAME=$(echo "$RESULT_DIRECTORY_NAME" | sed 's/[.:]/_/g')
 
 pre_switch_actions() {
-  init_command='if [[ -n $(poetry env info --path) ]]; then source $(poetry env info --path)/bin/activate; fi && clear && if [ -d ".git" ]; then nvim; fi'
+  init_command='if [[ -n $(poetry env info --path) ]]; then eval $(poetry env activate); fi && clear && if [ -d ".git" ]; then nvim; fi'
+
   tmux send-keys -t "$local_session_name:$RESULT_DIRECTORY_NAME" "$init_command" C-m
 }
 
