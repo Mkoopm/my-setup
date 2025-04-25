@@ -13,9 +13,8 @@ RESULT_DIRECTORY_NAME=$(basename $RESULT_PATH)
 RESULT_DIRECTORY_NAME=$(echo "$RESULT_DIRECTORY_NAME" | sed 's/[.:]/_/g')
 
 pre_switch_actions() {
-  init_command='if [[ -n $(poetry env info --path) ]]; then eval $(poetry env activate); fi && clear && if [ -d ".git" ]; then (git pull --ff-only origin main) &; nvim; fi'
-
-  tmux send-keys -t "$local_session_name:$RESULT_DIRECTORY_NAME" "$init_command" C-m
+  init_command='error=0; if [[ -n $(poetry env info --path) ]]; then eval $(poetry env activate) && poetry install; error=$(($error+$?)); fi; if [ -d ".git" ]; then (git pull --ff-only origin main); error=$(($error+$?)); if [ "$error" -eq 0 ]; then nvim; fi; fi'
+  tmux send-keys -t "$local_session_name:$RESULT_DIRECTORY_NAME" "$init_command" C-m &
 }
 
 if [[ -z $(pgrep tmux) ]] || ! tmux has-session -t "$local_session_name"; then
