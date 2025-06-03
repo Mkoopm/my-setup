@@ -1,0 +1,11 @@
+[font]
+size = 17.5
+normal = { family = "JetBrainsMonoNL NF", style = "Regular" }
+bold = { family = "JetBrainsMonoNL NF", style = "Bold" }
+italic = { family = "JetBrainsMonoNL NF", style = "Italic" }
+bold_italic = { family = "JetBrainsMonoNL NF", style = "Bold Italic" }
+# Font configuration
+# Point size
+[window]
+opacity = 0.8
+blur = true
