@@ -13,7 +13,7 @@ RESULT_DIRECTORY_NAME=$(basename $RESULT_PATH)
 RESULT_DIRECTORY_NAME=$(echo "$RESULT_DIRECTORY_NAME" | sed 's/[.:]/_/g')
 
 pre_switch_actions() {
-  init_command='error=0; if [[ -n $(poetry env info --path) ]]; then eval $(poetry env activate) && poetry install; error=$(($error+$?)); fi; if [ -d ".git" ]; then (git pull --ff-only origin main); error=$(($error+$?)); if [ "$error" -eq 0 ]; then nvim; fi; fi'
+  init_command='ls'
   tmux send-keys -t "$local_session_name:$RESULT_DIRECTORY_NAME" "$init_command" C-m &
 }
 
@@ -28,6 +28,6 @@ tmux list-windows -t "$local_session_name" -F \#{window_name} | grep -qw $RESULT
 tmux select-window -t "$RESULT_DIRECTORY_NAME"
 
 # if we are not in tmux, or the desired session is not the current session, attach
-if [[ -z $TMUX ]] || test $(tmux display-message -p '#S') != $local_session_name; then
+if [[ -z "$TMUX" ]] || test $(tmux display-message -p '#S') != $local_session_name; then
   tmux attach-session -d -t "$local_session_name"
 fi
