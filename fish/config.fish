@@ -26,5 +26,5 @@ zoxide init fish | source
 fish_add_path "HOME/.bin"
 
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-fish_add_path "$HOME/.rd/bin"
+set --export --prepend PATH "/Users/mk/.rd/bin"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
