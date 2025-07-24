@@ -1,0 +1,26 @@
+[user]
+	name = Marten Koopmans
+	email = 36400337+Mkoopm@users.noreply.github.com
+[core]
+	excludesfile = /Users/mk/.gitignore_global
+  editor = nvim
+  pager = delta
+[rebase]
+	autoStash = true
+[merge]
+  autoStash = true
+  conflictstyle = zdiff3
+[pull]
+	rebase = true
+[commit]
+  template = ~/.my_config.d/commit_template_conventional.txt
+[push]
+  autoSetupRemote = true
+  useForceIfIncludes = true
+[credential]
+	helper = store
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
