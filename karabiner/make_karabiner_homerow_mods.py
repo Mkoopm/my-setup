@@ -65,6 +65,17 @@ for modifier, right_mod_key in right_mods.items():
         ]
         template["manipulators"].append(current_entry)
 
+arrows = {"h": "left_arrow", "j": "down_arrow", "k": "up_arrow", "l": "right_arrow"}
+
+for key_name, arrow_name in arrows.items():
+    current_entry = deepcopy(template_entry)
+    current_entry["from"]["simultaneous"] = [
+        {"key_code": "g"},
+        {"key_code": key_name},
+    ]
+    current_entry["to_after_key_up"] = [{"key_code": arrow_name}]
+    template["manipulators"].append(current_entry)
+
 
 with open("karabiner_homerow_mods.json", "w") as fp:
     json.dump(template, fp)
