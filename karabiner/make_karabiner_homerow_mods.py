@@ -2,7 +2,29 @@ from template import template
 from copy import deepcopy
 import json
 
-left_keys = ["q", "w", "e", "r", "t", "a", "s", "d", "f", "g", "z", "x", "c", "v", "b"]
+left_keys = [
+    "q",
+    "w",
+    "e",
+    "r",
+    "t",
+    "a",
+    "s",
+    "d",
+    "f",
+    "g",
+    "z",
+    "x",
+    "c",
+    "v",
+    "b",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+]
 right_keys = [
     "y",
     "u",
@@ -23,6 +45,10 @@ right_keys = [
     "comma",
     "period",
     "slash",
+    "7",
+    "8",
+    "9",
+    "0",
 ]
 
 left_mods = {
