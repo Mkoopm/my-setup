@@ -20,6 +20,8 @@ pre_switch_actions() {
 if [[ -z $(pgrep tmux) ]] || ! tmux has-session -t "$local_session_name"; then
   echo "creating new session named: $local_session_name"
   tmux new-session -d -s "$local_session_name" -c "$HOME" -n "home"
+  tmux new-window -S -n "k9s" -t "$local_session_name" -c "$HOME"
+  tmux send-keys -t "$local_session_name:k9s" "k9s" C-m
 fi
 
 # if we cannot find the desired wintow name, create it
