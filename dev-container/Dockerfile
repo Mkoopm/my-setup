@@ -5,14 +5,13 @@ RUN apt-get update && \
   apt-transport-https \
   ca-certificates \
   build-essential \
-  fzf \
   curl \
-  neovim \
   ripgrep \
   gcc \
   gnupg \
   curl \
   findutils \
+  docker.io \
   git \
   ssh \
   vim \
@@ -35,11 +34,36 @@ RUN apt-get update && \
   && \
   rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://pyenv.run | bash && \
-  echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc && \
-  echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc && \
-  echo 'eval "$(pyenv init - bash)"' >> ~/.bashrc && \
-  touch ~/.profile && \
+# TODO: install neovim checking for cpu architecture
+#
+#
+# Install Neovim with architecture detection
+RUN ARCH=$(uname -m) && \
+  if [ "${ARCH}" = "aarch64" ]; then \
+  NVIM_ARCH="arm64"; \
+  else \
+  NVIM_ARCH="x86_64"; \
+  fi && \
+  curl -LO https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-${NVIM_ARCH}.tar.gz && \
+  tar -xzf nvim-linux-${NVIM_ARCH}.tar.gz && \
+  mv nvim-linux-${NVIM_ARCH} /opt/nvim && \
+  ln -s /opt/nvim/bin/nvim /usr/local/bin/nvim && \
+  rm nvim-linux-${NVIM_ARCH}.tar.gz
+
+RUN ARCH=$(uname -m) && \
+  if [ "${ARCH}" = "aarch64" ]; then \
+  FZF_ARCH="arm64"; \
+  else \
+  FZF_ARCH="amd64"; \
+  fi && \
+  curl -LO https://github.com/junegunn/fzf/releases/download/v0.67.0/fzf-0.67.0-linux_${FZF_ARCH}.tar.gz && \
+  ls && \
+  tar -xzf fzf-0.67.0-linux_${FZF_ARCH}.tar.gz && \
+  mv fzf /usr/local/bin/ && \
+  rm fzf-0.67.0-linux_${FZF_ARCH}.tar.gz
+
+
+RUN touch ~/.profile && \
   echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile && \
   echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile && \
   echo 'eval "$(pyenv init - bash)"' >> ~/.profile && \
@@ -54,10 +78,7 @@ RUN curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --d
   apt-get install -y kubectl
 
 # Install helm 
-RUN curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null && \
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list && \
-  apt-get update && \
-  apt-get install helm
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 RUN curl -sS https://webinstall.dev/k9s | bash
 
@@ -69,15 +90,32 @@ RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygi
   rm lazygit.tar.gz lazygit
 
 
-RUN ~/.pyenv/bin/pyenv install 3.12 && ~/.pyenv/bin/pyenv global 3.12
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install dev Python packages
 RUN pipx ensurepath && pipx install pre-commit poetry
 
 RUN mkdir -p /root/.config
-COPY nvim /root/.config/nvim
 
 #RUN usermod -l mk ubuntu
 RUN nvim --headless "+Lazy! sync" +qa
 
+RUN useradd -m -s /bin/bash developer && \
+  echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+  usermod -aG docker developer
 
+# Copy configs to a staging area (not in /home/developer)
+COPY --chown=developer:developer nvim /opt/initial-config/.config/nvim
+COPY --chown=developer:developer dotfiles/.tmux.conf /opt/initial-config/.tmux.conf
+
+# Single entrypoint that does everything
+COPY dev-container/entrypoint.sh /entrypoint.sh
+RUN chmod 755 /entrypoint.sh
+
+WORKDIR /home/developer
+RUN chown -R developer:developer .
+
+USER developer
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/bin/bash"]

@@ -1,0 +1,30 @@
+services:
+  dev:
+    build:
+      context: ../
+      dockerfile: dev-container/Dockerfile
+    container_name: devcontainer
+    hostname: devbox
+    stdin_open: true
+    tty: true
+    privileged: true  # For Docker-in-Docker
+    
+    volumes:
+      # Persistent home directory in Docker volume
+      - dev-home:/home/developer
+      
+      # Forward SSH keys (read-only)
+      - ${HOME}/.ssh:/home/developer/.ssh:ro
+      
+      # Optional: mount your workspace/projects
+      - ${HOME}/Repositories:/repositories
+      
+    environment:
+      - TERM=xterm-256color
+    
+    # Keep container running
+    command: tail -f /dev/null
+
+volumes:
+  dev-home:
+    driver: local
