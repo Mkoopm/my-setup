@@ -34,6 +34,7 @@ RUN apt-get update && \
   && \
   rm -rf /var/lib/apt/lists/*
 
+
 # TODO: install neovim checking for cpu architecture
 #
 #
@@ -97,9 +98,6 @@ RUN pipx ensurepath && pipx install pre-commit poetry
 
 RUN mkdir -p /root/.config
 
-#RUN usermod -l mk ubuntu
-RUN nvim --headless "+Lazy! sync" +qa
-
 RUN useradd -m -s /bin/bash developer && \
   echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
   usermod -aG docker developer
@@ -116,6 +114,12 @@ WORKDIR /home/developer
 RUN chown -R developer:developer .
 
 USER developer
+
+RUN nvim --headless "+Lazy! restore" +qa
+
+RUN nvim --headless "+Lazy! install" +qa
+
+
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
