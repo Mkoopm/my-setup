@@ -1,0 +1,9 @@
+services:
+  dev:
+    volumes:
+      # Forward SSH keys (read-only)
+      - ${HOME}/.ssh:/home/ubuntu/.ssh:ro
+
+      # Optional: mount your workspace/projects
+      - ${HOME}/Repositories:/home/ubuntu/repositories
+

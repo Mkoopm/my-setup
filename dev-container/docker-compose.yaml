@@ -11,13 +11,6 @@ services:
     privileged: true  # For Docker-in-Docker
     ports:
       - "8080:8080"
-    volumes:
-      # Forward SSH keys (read-only)
-      - ${HOME}/.ssh:/home/ubuntu/.ssh:ro
-      
-      # Optional: mount your workspace/projects
-      - ${HOME}/Repositories:/home/ubuntu/repositories
-      
     environment:
       - TERM=xterm-256color
     

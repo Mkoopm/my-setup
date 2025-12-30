@@ -122,6 +122,4 @@ RUN nvim --headless -c "quitall"
 RUN nvim --headless "+Lazy! restore" +qa
 # RUN nvim --headless "+Lazy! install" +qa
 
-
-
 CMD ["/bin/bash"]
