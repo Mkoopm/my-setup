@@ -94,6 +94,8 @@ RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygi
   install lazygit -D -t /usr/local/bin/ && \
   rm lazygit.tar.gz lazygit
 
+# to run code server: code-server --bind-addr 0.0.0.0:8080 --auth none /home/ubuntu/repositories
+RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
