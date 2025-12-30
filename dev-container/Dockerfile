@@ -124,5 +124,4 @@ RUN nvim --headless "+Lazy! restore" +qa
 
 
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
