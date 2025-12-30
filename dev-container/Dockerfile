@@ -110,11 +110,6 @@ COPY --chown=ubuntu:ubuntu nvim /opt/initial-config/.config/nvim
 COPY --chown=ubuntu:ubuntu nvim /home/ubuntu/.config/nvim
 COPY --chown=ubuntu:ubuntu dotfiles/.tmux.conf /opt/initial-config/.tmux.conf
 
-# Single entrypoint that does everything
-COPY dev-container/entrypoint.sh /entrypoint.sh
-RUN chmod 755 /entrypoint.sh
-
-
 WORKDIR /home/ubuntu
 RUN chown -R 1000:1000 .
 
