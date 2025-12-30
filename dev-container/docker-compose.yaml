@@ -5,16 +5,17 @@ services:
       dockerfile: dev-container/Dockerfile
     container_name: devcontainer
     hostname: devbox
+    user: "1000:1000"
     stdin_open: true
     tty: true
     privileged: true  # For Docker-in-Docker
     
     volumes:
       # Forward SSH keys (read-only)
-      - ${HOME}/.ssh:/home/developer/.ssh:ro
+      - ${HOME}/.ssh:/home/ubuntu/.ssh:ro
       
       # Optional: mount your workspace/projects
-      - ${HOME}/Repositories:/home/developer/repositories
+      - ${HOME}/Repositories:/home/ubuntu/repositories
       
     environment:
       - TERM=xterm-256color

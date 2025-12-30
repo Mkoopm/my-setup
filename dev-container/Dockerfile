@@ -6,6 +6,7 @@ RUN apt-get update && \
   ca-certificates \
   build-essential \
   curl \
+  xclip \
   ripgrep \
   gcc \
   gnupg \
@@ -101,24 +102,21 @@ RUN pipx ensurepath && pipx install pre-commit poetry
 
 RUN mkdir -p /root/.config
 
-RUN useradd -m -s /bin/bash developer && \
-  echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-  usermod -aG docker developer
 
-# Copy configs to a staging area (not in /home/developer)
-COPY --chown=developer:developer nvim /opt/initial-config/.config/nvim
-COPY --chown=developer:developer nvim /home/developer/.config/nvim
-COPY --chown=developer:developer dotfiles/.tmux.conf /opt/initial-config/.tmux.conf
+# Copy configs to a staging area (not in /home/ubuntu)
+COPY --chown=ubuntu:ubuntu nvim /opt/initial-config/.config/nvim
+COPY --chown=ubuntu:ubuntu nvim /home/ubuntu/.config/nvim
+COPY --chown=ubuntu:ubuntu dotfiles/.tmux.conf /opt/initial-config/.tmux.conf
 
 # Single entrypoint that does everything
 COPY dev-container/entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
 
-WORKDIR /home/developer
-RUN chown -R developer:developer .
+WORKDIR /home/ubuntu
+RUN chown -R 1000:1000 .
 
-USER developer
+USER ubuntu
 
 RUN mkdir -p $HOME/.local/share/nvim/site/pack \
   $HOME/.local/state/nvim \
