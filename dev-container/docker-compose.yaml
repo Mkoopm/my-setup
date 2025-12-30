@@ -10,9 +10,6 @@ services:
     privileged: true  # For Docker-in-Docker
     
     volumes:
-      # Persistent home directory in Docker volume
-      - dev-home:/home/developer
-      
       # Forward SSH keys (read-only)
       - ${HOME}/.ssh:/home/developer/.ssh:ro
       

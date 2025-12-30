@@ -13,7 +13,10 @@ RUN apt-get update && \
   findutils \
   docker.io \
   git \
+  tar \
+  unzip \
   ssh \
+  npm \
   vim \
   sudo \
   dos2unix \
@@ -104,20 +107,25 @@ RUN useradd -m -s /bin/bash developer && \
 
 # Copy configs to a staging area (not in /home/developer)
 COPY --chown=developer:developer nvim /opt/initial-config/.config/nvim
+COPY --chown=developer:developer nvim /home/developer/.config/nvim
 COPY --chown=developer:developer dotfiles/.tmux.conf /opt/initial-config/.tmux.conf
 
 # Single entrypoint that does everything
 COPY dev-container/entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
+
 WORKDIR /home/developer
 RUN chown -R developer:developer .
 
 USER developer
 
+RUN mkdir -p $HOME/.local/share/nvim/site/pack \
+  $HOME/.local/state/nvim \
+  $HOME/.cache/nvim
+RUN nvim --headless -c "quitall"
 RUN nvim --headless "+Lazy! restore" +qa
-
-RUN nvim --headless "+Lazy! install" +qa
+# RUN nvim --headless "+Lazy! install" +qa
 
 
 
