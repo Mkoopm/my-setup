@@ -17,6 +17,9 @@ RUN apt-get update && \
   tar \
   unzip \
   ssh \
+  podman \
+  buildah \
+  fuse-overlayfs \
   npm \
   vim \
   sudo \
@@ -104,6 +107,8 @@ RUN pipx ensurepath && pipx install pre-commit poetry
 
 RUN mkdir -p /root/.config
 
+RUN mkdir -p /home/developer/.config/containers && \
+    echo 'export BUILDAH_ISOLATION=chroot' >> /home/developer/.bashrc
 
 # Copy configs to a staging area (not in /home/ubuntu)
 COPY --chown=ubuntu:ubuntu nvim /opt/initial-config/.config/nvim
