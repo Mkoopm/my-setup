@@ -26,7 +26,7 @@ services:
         mkdir /home/ubuntu/.kube
         cat /kube/kubeconfig.yaml > /home/ubuntu/.kube/config
         # Fix server URL to use service name
-        sed -i 's/127.0.0.1:6443/k3s-server:6443/g' $HOME/.kube/config
+        sed -i 's/127.0.0.1:6443/k3s-server:6443/g' /home/ubuntu/.kube/config
         
         # Now kubectl works!
         kubectl get nodes
