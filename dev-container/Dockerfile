@@ -71,6 +71,17 @@ RUN ARCH=$(uname -m) && \
   rm fzf-0.67.0-linux_${FZF_ARCH}.tar.gz
 
 
+# Install kubectl (architecture-aware)
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then \
+        KUBECTL_ARCH="arm64"; \
+    else \
+        KUBECTL_ARCH="amd64"; \
+    fi && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${KUBECTL_ARCH}/kubectl" && \
+    install kubectl /usr/local/bin/kubectl && \
+    rm kubectl
+
 RUN touch ~/.profile && \
   echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile && \
   echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile && \
@@ -85,10 +96,10 @@ RUN curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | gpg --d
   apt-get update && \
   apt-get install -y kubectl
 
+
+
 # Install helm 
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-RUN curl -sS https://webinstall.dev/k9s | bash
 
 # Install LazyGit, a git terminal UI
 RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*') && \
@@ -100,25 +111,28 @@ RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygi
 # to run code server: code-server --bind-addr 0.0.0.0:8080 --auth none /home/ubuntu/repositories
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install dev Python packages
-RUN pipx ensurepath && pipx install pre-commit poetry
-
-RUN mkdir -p /root/.config
-
 RUN mkdir -p /home/developer/.config/containers && \
     echo 'export BUILDAH_ISOLATION=chroot' >> /home/developer/.bashrc
 
-# Copy configs to a staging area (not in /home/ubuntu)
-COPY --chown=ubuntu:ubuntu nvim /opt/initial-config/.config/nvim
-COPY --chown=ubuntu:ubuntu nvim /home/ubuntu/.config/nvim
-COPY --chown=ubuntu:ubuntu dotfiles/.tmux.conf /opt/initial-config/.tmux.conf
+
 
 WORKDIR /home/ubuntu
 RUN chown -R 1000:1000 .
 
 USER ubuntu
+
+
+RUN curl -sS https://webinstall.dev/k9s | bash
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dev Python packages
+RUN pipx ensurepath && pipx install pre-commit poetry
+
+
+# Copy configs to a staging area (not in /home/ubuntu)
+COPY --chown=ubuntu:ubuntu nvim /opt/initial-config/.config/nvim
+COPY --chown=ubuntu:ubuntu nvim /home/ubuntu/.config/nvim
+COPY --chown=ubuntu:ubuntu dotfiles/.tmux.conf /opt/initial-config/.tmux.conf
 
 RUN mkdir -p $HOME/.local/share/nvim/site/pack \
   $HOME/.local/state/nvim \

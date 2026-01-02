@@ -11,12 +11,50 @@ services:
     privileged: true  # For Docker-in-Docker
     ports:
       - "8080:8080"
+    security_opt:
+      - apparmor=unconfined
+      - seccomp=unconfined
+    # Allow user namespace remapping
+    userns_mode: host
+    # Keep container running
+    command: 
+      - sh
+      - -c
+      - |
+        # Wait for kubeconfig
+        while [ ! -f /kube/kubeconfig.yaml ]; do sleep 1; done
+        mkdir /home/ubuntu/.kube
+        cat /kube/kubeconfig.yaml > /home/ubuntu/.kube/config
+        # Fix server URL to use service name
+        sed -i 's/127.0.0.1:6443/k3s-server:6443/g' $HOME/.kube/config
+        
+        # Now kubectl works!
+        kubectl get nodes
+        sleep infinity    
+    volumes:
+      - kubeconfig:/kube
     environment:
       - TERM=xterm-256color
-    
-    # Keep container running
-    command: tail -f /dev/null
+    depends_on:
+      - k3s-server
+
+
+  k3s-server:
+    image: rancher/k3s:latest
+    privileged: true
+    # No ports exposed to host
+    environment:
+      - K3S_KUBECONFIG_OUTPUT=/output/kubeconfig.yaml
+      - K3S_KUBECONFIG_MODE=644
+    volumes:
+      - kubeconfig:/output
+    tmpfs:
+      - /run
+      - /var/run
+    command: server --tls-san=k3s-server
+
 
 volumes:
   dev-home:
     driver: local
+  kubeconfig:
