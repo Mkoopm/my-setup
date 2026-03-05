@@ -29,6 +29,7 @@ return {
   keys = {
     { "<leader>ac", "<cmd>CodeCompanionChat Toggle<cr>", desc = "AI Chat", mode = { "n", "v" } },
     { "<leader>aa", "<cmd>CodeCompanionActions<cr>", desc = "AI Actions", mode = { "n", "v" } },
-    { "<leader>ai", "<cmd>CodeCompanion<cr>", desc = "AI Inline", mode = { "n", "v" } },
+    { "<leader>ai", "<cmd>CodeCompanion<cr>", desc = "AI Inline", mode = { "n" } },
+    { "<leader>ai", ":'<,'>CodeCompanion<cr>", desc = "AI Inline", mode = { "v" } },
   },
 }
